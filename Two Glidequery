@@ -1,0 +1,16 @@
+(function executeRule(current, previous /*null when async*/ ) {
+
+var sapIncs = new GlideRecord("incident");
+sapIncs.addQuery("name","value");
+sapIncs.query();
+sapIncs.addQuery("short_description","CONTAINS","SAP");
+sapIns.query();
+
+var myLog = "";
+
+while (sapIncs.next()) {
+myLog += sapIncs.number + ",";
+}
+  gs.addInfoMessage("These records are active SAP Incidents:" + myLog) ;
+
+})(current, previous);
