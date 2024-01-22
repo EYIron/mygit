@@ -1,0 +1,15 @@
+(function executeRule(current, previous /*null when async*/ ) {
+
+    var makeVIP = new GlideRecord('sys_user');
+    q1 = makeVIP.addQuery('title', 'CONTAINS', VP);
+    q1.addOrCondition('title', 'CONTAINS', 'Vice');
+    q1.addOrCondition('title', 'CONTAINS', 'Chief');
+    makeVIP.query();
+
+    while (makeVIP.next()) {
+        makeVIP.vip = true;
+        gs.info("ADMIN: " + makeVIP.name + "with title: " + makeVIP + " is now a VIP.");
+		makeVIP.update();
+    }
+	//
+})(current, previous);
