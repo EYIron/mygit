@@ -1,0 +1,36 @@
+# Condition (in the Advanced tab) : current.state.changesTo(IncidentState.CLOSED)
+# RCA Update PRB and Child INCs
+
+//When the Value of State changes to Colsed 
+# If the Problem field has a value
+// Create a new GlideRecord object for the Problem table
+// Get the current problem into the new GlideRecord object.
+// Update the Problem's Work notes with the RCA source and current value of RCA.
+# Create a new GlideRecord object for the Incident table
+# Query for incidents where the value of Parent Incident is the same as the current Incident.
+# Qeury the database
+# While there are records returned
+// Update the Child Incident's RCA field to indicate the RCA source and current value of RCA
+
+(function executeRule(current, previous /*null when async*/ ) {
+
+// start //
+
+    if (!current.problem_id.nil()) {
+        var prbRecord = new GlideRecord('problem');
+        prbRecord.get(current.problem_id);
+        prbRecord.work_notes += "\n\nRCA from " + current.number + " : " + current.u_rca;
+        prbRecord.update();
+    }
+
+    var childIncs = new GlideRecord('incident');
+	childIncs.addQuery("parent_incident",current.sys_id);
+	childIncs.query();
+
+	while (childIncs.next()){
+		childIncs.u_rca += "RCA from" + current.number + ":" + current.u_rca;
+		childIncs.update();
+	}
+
+
+})(current, previous);
