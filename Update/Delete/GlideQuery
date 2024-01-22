@@ -1,0 +1,18 @@
+# Update
+
+new GlideQuery('sys_user')
+    .where('sys_id', '3993258bf1f731107f44fe4bad91bd98')
+    .update({
+        mobile_phone: '800-Cof-fee1'
+    });
+
+//sys_id Copy//
+
+
+
+# Delete
+
+new GlideQuery('sys_user')
+.where('active',true)
+.where('sys_id','3993258bf1f731107f44fe4bad91bd98')
+.deleteMultiple();
