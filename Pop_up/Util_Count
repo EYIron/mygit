@@ -1,0 +1,21 @@
+var AssignmentGroupUtils = Class.create();
+AssignmentGroupUtils.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+	countGroupMembers: function () {
+		var grpName = "";
+		var message = "There are no members in this Assignment Group";
+		var groupID = this.getParameter('sysparm_group_id');
+
+		var grpMems = new GlideRecord('sys_user_grmember');
+		grpMems.addQuery('group.sys_id', groupID);
+		grpMems.query();
+
+		if (grpMems.next()) {
+			grpName = grpMems.getDisplayValue('group');
+		}
+		if (grpName != "") {
+			message = "There are " + grpMems.getRowCount() + "members in the " + grpName + "group";
+		}
+		return message;
+	},
+	type: 'AssignmentGroupUtils'
+});
