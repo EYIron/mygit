@@ -1,0 +1,74 @@
+//assign right person
+
+
+
+#Script Include
+
+var AssignmentGroupUtils = Class.create();
+AssignmentGroupUtils.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+	countGroupMembers: function () {
+
+		var grpName = "";
+		var message = "There are no members in this Assignment Group";
+		var groupID = this.getParameter('sysparm_group_id');
+
+		var grpMems = new GlideRecord('sys_user_grmember');
+		grpMems.addQuery('group.sys_id', groupID);
+		grpMems.query();
+
+		if (grpMems.next()) {
+			grpName = grpMems.getDisplayValue('group');
+		}
+		if (grpName != "") {
+			message = "There are " + grpMems.getRowCount() + "members in the " + grpName +
+				"group";
+		}
+		return message;
+	},
+
+	assignAnalyst: function () {
+		var groupID = this.getParameter('sysparm_group_id');
+		var membersArray = [];
+
+		var membersGR = new GlideRecord('sys_user_grmember');
+		membersGR.addQuery('group.sys_id', groupID);
+		membersGR.query();
+
+		while (membersGR.next()) {
+			var member = {};
+			member.sys_id = membersGR.user.sys_id.toString();
+			member.name = membersGR.user.getDisplayValue();
+			membersArray.push(member);
+		}
+		return JSON.stringify(membersArray);
+
+	},
+
+	type: 'AssignmentGroupUtils'
+});
+
+
+# Client Script
+
+function onChange(control, oldValue, newValue, isLoading, isTemplate) {
+	if (isLoading || newValue === '') {
+		return;
+	}
+
+	var membersGA = new GlideAjax('AssignmentGroupUtils');
+	membersGA.addParam('sysparm_name', 'assignAnalyst');
+	membersGA.addParam('sysparm_group_id', g_form.getValue('assignment_group'));
+	membersGA.getXMLAnswer(membersParse);
+
+	function membersParse(response) {
+		var members = JSON.parse(response);
+
+		if (members.length > 0) {
+			var randomNum = Math.floor(Math.random() * members.length);
+			g_form.setValue('assigned_to', members[ramdonNum].sys_id, members[randomNum].name);
+		} else {
+			g_form.setValue('assigned_to', "");
+			alert("The assignment group has no users assigned to it");
+		}
+	}
+}
