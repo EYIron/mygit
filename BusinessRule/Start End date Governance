@@ -1,0 +1,8 @@
+(function executeRule(current, previous /*null when async*/ ) {
+
+    if (current.end_date < current.start_date) {
+        gs.addErrorMessage('End date must be later than start date!');
+        current.setAbortAction(true);
+    }
+
+})(current, previous);
