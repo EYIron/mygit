@@ -1,0 +1,18 @@
+var gr = new GlideRecord('x_cdltd_loaner_req_loaner_request');
+var pickUpLeadTime = gs.getProperty('x_cdltd_loaner_req.pickup.leadtime', 24) * 60 * 1000;
+
+var noticeTime = new GlideDateTime();
+noticeTime.add(pickUpLeadTime);
+
+gr.addQuery('state', 16);
+gr.addQuery('pick_up_reminder', '');
+gr.addQuery('start_date', '<=', noticeTime);
+gr.query();
+
+var rightNow = new GlideDateTime();
+
+while (gr.next()) {
+	gr.pick_up_reminder = rightNow;
+	gr.update();
+	gs.eventQueue('x_cdltd_loaner_req.pickUp',gr,gr.number,gs.getUserName());
+}
